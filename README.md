@@ -1,4 +1,4 @@
-# Qithub LocalHost
+# Qithub PortalHost
 
 Docker 内のネットワークにあるコンテナの Web サービスポートを外部に簡易公開するだけのコンテナです。
 
