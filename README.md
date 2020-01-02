@@ -9,7 +9,7 @@ Docker で作成した Web サービスを外部に公開したい場合、こ�
 1. ホスト側にコンテナのポートを解放する（`-p 8888:80` などの）設定
 2. 自宅のルーターをホストに向けるなどの設定
 
-Docker ネットワーク内のクローズドな環境で完結できるため、意図的に LAN 側に解放しない限り、安全で簡単にコンテナの Web サービスの確認および公開ができます。
+Docker ネットワーク内のクローズドな環境で完結できるため、意図的にホスト側（LAN 側）に解放しない限り、安全で簡単にコンテナの Web サービスの確認および公開ができます。
 
 ## 使い方
 
@@ -21,7 +21,7 @@ Docker ネットワーク内のクローズドな環境で完結できるため�
 # サービス・コンテナの起動
 docker-compose up -d
 # 公開 URL の取得
-url_srv=$(docker-compose logs portforwarder | tail -1 | awk -F' ' '{print $NF}' | grep localhost.run)
+url_srv=$(docker-compose logs portalhost | tail -1 | awk -F' ' '{print $NF}' | grep localhost.run)
 # 公開 URL の確認
 echo $url_srv
 # 公開 URL で Kagome Web API を叩いてみる
@@ -35,10 +35,10 @@ curl -s -XPUT "${url_srv%$'\r'}/a" -d'{"sentence":"すもももももももも�
 ```yaml
 version: "3.7"
 services:
-  portforwarder:
-    container_name: portforwarder
+  portalhost:
+    container_name: portalhost
     build: .
-    image: portforwarder:local
+    image: portalhost:local
     tty: true
     stdin_open: true
     init: true
@@ -55,39 +55,39 @@ services:
 $ # サービス・コンテナをバックグラウンドで起動
 $ docker-compose up -d
 ...
-Successfully built fdabd61549d7
-Successfully tagged portforwarder:local
-WARNING: Image for service portforwarder was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Successfully built 9315b40db3b5
+Successfully tagged portalhost:latest
+WARNING: Image for service portalhost was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
 Creating kagome ... done
-Creating portforwarder ... done
+Creating portalhost ... done
 ```
 
 ```shellsession
 $ # コンテナの起動を確認（Ports でポートがホスト側に公開されていないことに注目）
 $ docker-compose ps
-    Name                  Command              State   Ports
-------------------------------------------------------------
-kagome          kagome server -http=:80        Up
-portforwarder   /sbin/tini -- /entrypoint.sh   Up
+   Name              Command           State   Ports
+----------------------------------------------------
+kagome       kagome server -http=:80   Up
+portalhost   /entrypoint.sh            Up
 ```
 
 ```shellsession
 $ # 外部公開された URL を確認
-$ docker-compose logs portforwarder
-Attaching to portforwarder
-portforwarder    | Setting up forwarding from ssh.localhost.run to kagome:80
-portforwarder    | Warning: Permanently added 'ssh.localhost.run,35.193.161.204' (RSA) to the list of known hosts.
-portforwarder    | Connect to http://root-m3nr.localhost.run or https://root-m3nr.localhost.run
+$ docker-compose logs portalhost
+Attaching to portalhost
+portalhost    | ssh.localhost.run の接続を kagome:80 にポートフォワーディングしています。
+portalhost    | Warning: Permanently added 'ssh.localhost.run,35.193.161.204' (RSA) to the list of known hosts.
+portalhost    | Connect to http://qithub-tq63.localhost.run or https://qithub-tq63.localhost.run
 $ # ---------------------------------------------------------------------------
-$ #  上記の場合、https://root-m3nr.localhost.run/ へのアクセスが、この Docker
-$ #  ネットワーク内の http://kagome:80/ へポートフォワーディングされます。
+$ # 上記の場合、https://qithub-tq63.localhost.run/ へのアクセスが、この Docker
+$ # ネットワーク内の http://kagome:80/ へポートフォワーディングされます。
 $ # ---------------------------------------------------------------------------
 ```
 
 ```shellsession
 $ # ホストから kagome の API を叩いてみる
-$ # https://root-m3nr.localhost.run/a がエンドポイントです。
-$ curl -s -XPUT https://root-m3nr.localhost.run/a \
+$ # https://qithub-tq63.localhost.run/a がエンドポイントです。
+$ curl -s -XPUT https://qithub-tq63.localhost.run/a \
   -d'{"sentence":"すもももももももものうち", "mode":"normal"}' | jq .
 ```
 
@@ -146,5 +146,6 @@ $ curl -s -XPUT https://root-m3nr.localhost.run/a \
 
 ## 参考文献
 
+- [ngrok大好きな私がServeoで感動した話](https://qiita.com/sskmy1024y/items/8395c85d09931d7dea27) @ Qiita
 - [taichunmin/docker-serveo](https://github.com/taichunmin/docker-serveo) @ GitHub
 - [jacobtomlinson/docker-serveo](https://github.com/jacobtomlinson/docker-serveo) @ GitHub
