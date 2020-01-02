@@ -7,12 +7,12 @@ version: "3.7"
 services:
   portalhost:
     container_name: portalhost
-    build: .
+    build: ..
     image: portalhost:latest
     tty: true
     stdin_open: true
     init: true
-    env_file: config.env
+    env_file: ./config.env
     depends_on:
       - kagome
   kagome:
