@@ -13,7 +13,7 @@ Docker ネットワーク内のクローズドな環境で完結できるため�
 
 ## 使い方
 
-例えば、日本語形態素解析器 [`kagome`](https://qiita.com/KEINOS/items/8b5e3a251430db89de3f) の Web API サービス・コンテナを外部に簡易公開したい場合は以下のようになります。
+例えば、日本語形態素解析器 [`kagome`](https://qiita.com/KEINOS/items/8b5e3a251430db89de3f) の Web API サービス・コンテナを外部に簡易公開したい場合は以下のようになります。（リポジトリの `/sample` ディレクトリでお試しください）
 
 ### TL;DR
 
